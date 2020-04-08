@@ -1,0 +1,97 @@
+#!/usr/bin/python
+# 
+# this shit is licensed under the halal general public license v0 (hgplv0),
+# pronounced ``hagpull al-zero'', which is basically gplv3 subject to the
+# additional constraints for as long as a copy of this shit rests somewhere on
+# any of ur properties in a form that u can use:
+#
+# (1) you must not use shit herein for engaging in the following un-halal
+# activities:
+#   * committing murder.
+#   * practicing black magic.
+#   * cutting off the ties of relationships.
+#   * taking or paying interest (riba).
+#   * consuming the property of an orphan.
+#   * being an unjust leader (e.g. if u r narendra modi, or xi jinping, then u
+#     r not allowed to use this).
+#
+# (2) and, only if u r a muslim, then u must also avoid these extra things on
+# top of the above:
+#   * shirk (associating partners with allah).
+#   * leaving daily prayers (salah).
+#   * zakat evasion (not giving obligatory charity).
+#   * not fasting on the days of ramadan (without an excuse).
+#   * not performing hajj (while being able to do so).
+#   * lying about allah and his messenger.
+#   * turning back when the army advances (running from the battlefield).
+#   * committing adultery or fornication (zina).
+#   * committing sodomy.
+#
+# list above is obtained from:
+# https://en.wikipedia.org/wiki/Islamic_views_on_sin#Major_sins:_Al-Kabirah
+
+import os
+import subprocess
+
+# config
+SYMLINK_LINUX = '/usr/src/linux'
+DIR_KERNELS = '/boot/gentoo/'
+PATH_BOOT_ENTRY = '/boot/loader/entries/gentoo-{VERSION}.conf'
+DATA_BOOT_ENTRY = '''\
+title   Gentoo Linux {VERSION}
+linux   /gentoo/vmlinuz-{VERSION}-gentoo-x86_64
+initrd  /gentoo/initramfs-{VERSION}-gentoo-x86_64.img
+options root=PARTUUID=ab1380a1-c2bf-3742-b654-b2e9e8bcd5eb rw quiet
+'''
+PATH_BOOT_LOADER = '/boot/loader/loader.conf'
+DATA_BOOT_LOADER = '''\
+timeout 4
+#console-mode keep
+#default a1ef799316564519b53354671a0c6ec0-*
+default gentoo-{VERSION}.conf
+'''
+
+# update the system
+subprocess.run(['layman' ,'-S'])
+subprocess.run(['emerge', '--sync'])
+subprocess.run(['emerge', '-aqvDuUNt', '@world'])
+
+# get the latest linux kernel
+path_kernel = os.readlink(SYMLINK_LINUX)
+kernel_version = path_kernel.split('-')[1]
+
+# check if this kernel is installed
+kernel_installed = False
+systemmap_found = False
+initramfs_found = False
+vmlinuz_found = False
+for f in os.listdir(DIR_KERNELS):
+    file_type, version, _, _ = f.split('-')
+    if version == kernel_version:
+        if file_type == 'System.map':
+            systemmap_found = True
+        elif file_type == 'initramfs':
+            initramfs_found = True
+        elif file_type == 'vmlinuz':
+            vmlinuz_found = True
+if systemmap_found and initramfs_found and vmlinuz_found:
+    kernel_installed = True
+
+# install new kernel if not installed
+if not kernel_installed:
+    # compile + install new kernel
+    subprocess.run(['genkernel', 'all'])
+
+    # install new boot entry
+    path_boot_entry = PATH_BOOT_ENTRY.format(**{'VERSION':kernel_version})
+    data_boot_entry = DATA_BOOT_ENTRY.format(**{'VERSION':kernel_version})
+    with open(path_boot_entry, 'w') as f:
+        f.write(data_boot_entry)
+
+    # make new kernel load by default
+    path_boot_loader = PATH_BOOT_LOADER.format(**{'VERSION':kernel_version})
+    data_boot_loader = DATA_BOOT_LOADER.format(**{'VERSION':kernel_version})
+    with open(path_boot_loader, 'w') as f:
+        f.write(data_boot_loader)
+
+    print('\nkernel v{} installed successfully'.format(kernel_version))
