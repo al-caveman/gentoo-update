@@ -55,6 +55,7 @@ default gentoo-{VERSION}.conf
 subprocess.run(['layman' ,'-S'])
 subprocess.run(['emerge', '--sync'])
 subprocess.run(['emerge', '-aqvDuUNt', '@world'])
+subprocess.run(['emerge', '--depclean'])
 
 # get the latest linux kernel
 path_kernel = os.readlink(SYMLINK_LINUX)
