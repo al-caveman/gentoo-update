@@ -54,7 +54,7 @@ default gentoo-{VERSION}.conf
 # update the system
 subprocess.run(['layman' ,'-S'])
 subprocess.run(['emerge', '--sync'])
-subprocess.run(['emerge', '-aqvDuNt', '@world'])
+subprocess.run(['emerge', '-avDuNt', '--quiet-build=y', '@world'])
 subprocess.run(['emerge', '--depclean'])
 
 # get the latest linux kernel
