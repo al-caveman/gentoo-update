@@ -31,6 +31,7 @@
 # https://en.wikipedia.org/wiki/Islamic_views_on_sin#Major_sins:_Al-Kabirah
 
 import os
+import sys
 import subprocess
 
 # config
@@ -50,13 +51,26 @@ timeout 4
 #default a1ef799316564519b53354671a0c6ec0-*
 default gentoo-{VERSION}.conf
 '''
+COLOR_CMD = '\033[1;33m'
+COLOR_NONE = '\033[0m'
 
 # update the system
-subprocess.run(['layman' ,'-S'])
-subprocess.run(['emerge', '--sync'])
-subprocess.run(['emerge', '-avDuNt', '--quiet-build=y', '@world'])
-subprocess.run(['emerge', '-1t', '--quiet-build=y', '@preserved-rebuild'])
-subprocess.run(['emerge', '--depclean'])
+def runcmd(cmd):
+    sys.stderr.write(
+        '{}running "{}"...{}\n'.format(
+            COLOR_CMD,
+            ' '.join(cmd),
+            COLOR_NONE
+        )
+    )
+    sys.stderr.flush()
+    subprocess.run(cmd)
+
+runcmd(['layman' ,'-S'])
+runcmd(['emerge', '--sync'])
+runcmd(['emerge', '-avDuNt', '--quiet-build=y', '@world'])
+runcmd(['emerge', '-1t', '--quiet-build=y', '@preserved-rebuild'])
+runcmd(['emerge', '--depclean'])
 
 # get the latest linux kernel
 path_kernel = os.readlink(SYMLINK_LINUX)
