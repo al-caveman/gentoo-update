@@ -68,7 +68,8 @@ def runcmd(cmd):
 
 runcmd(['layman' ,'-S'])
 runcmd(['emerge', '--sync'])
-runcmd(['emerge', '-avDuNt', '--quiet-build=y', '@world'])
+runcmd(['emerge', '-avDuNt', '--quiet-build=y', '--keep-going=y',
+    '@world'])
 runcmd(['emerge', '-1t', '--quiet-build=y', '@preserved-rebuild'])
 runcmd(['emerge', '--depclean'])
 
