@@ -1,74 +1,9 @@
-#!/usr/bin/python
-# 
-# this shit is licensed under the halal general public license v0 (hgplv0),
-# pronounced ``hagpull al-zero'', which is basically gplv3 subject to the
-# additional constraints for as long as a copy of this shit rests somewhere on
-# any of ur properties in a form that u can use:
-#
-# (1) you must not use shit herein for engaging in the following un-halal
-# activities:
-#   * committing murder.
-#   * practicing black magic.
-#   * cutting off the ties of relationships.
-#   * taking or paying interest (riba).
-#   * consuming the property of an orphan.
-#   * being an unjust leader (e.g. if u r narendra modi, or xi jinping, then u
-#     r not allowed to use this).
-#
-# (2) and, only if u r a muslim, then u must also avoid these extra things on
-# top of the above:
-#   * shirk (associating partners with allah).
-#   * leaving daily prayers (salah).
-#   * zakat evasion (not giving obligatory charity).
-#   * not fasting on the days of ramadan (without an excuse).
-#   * not performing hajj (while being able to do so).
-#   * lying about allah and his messenger.
-#   * turning back when the army advances (running from the battlefield).
-#   * committing adultery or fornication (zina).
-#   * committing sodomy.
-#
-# list above is obtained from:
-# https://en.wikipedia.org/wiki/Islamic_views_on_sin#Major_sins:_Al-Kabirah
-
-import os
-import sys
-import subprocess
-
-# config
-SYMLINK_LINUX = '/usr/src/linux'
-DIR_KERNELS = '/boot/gentoo/'
-PATH_BOOT_ENTRY = '/boot/loader/entries/gentoo-{VERSION}.conf'
-DATA_BOOT_ENTRY = '''\
-title   Gentoo Linux {VERSION}
-linux   /gentoo/vmlinuz-{VERSION}-gentoo-x86_64
-initrd  /gentoo/initramfs-{VERSION}-gentoo-x86_64.img
-options root=PARTUUID=ab1380a1-c2bf-3742-b654-b2e9e8bcd5eb rw quiet
-'''
-PATH_BOOT_LOADER = '/boot/loader/loader.conf'
-DATA_BOOT_LOADER = '''\
-timeout 4
-#console-mode keep
-#default a1ef799316564519b53354671a0c6ec0-*
-default gentoo-{VERSION}.conf
-'''
-COLOR_CMD = '\033[1;33m'
-COLOR_NONE = '\033[0m'
-
-# update the system
-def runcmd(cmd):
-    sys.stderr.write(
-        '{}running "{}"...{}\n'.format(
-            COLOR_CMD,
-            ' '.join(cmd),
-            COLOR_NONE
-        )
-    )
-    sys.stderr.flush()
-    subprocess.run(cmd)
-
-runcmd(['layman' ,'-S'])
-runcmd(['emerge', '--sync'])
-runcmd(['emerge', '-avDuNt', '--quiet-build=y', '--keep-going=y',
-    '@world'])
-runcmd(['emerge', '-1t', '--quiet-build=y', '@preserved-rebuild'])
-runcmd(['emerge', '--depclean'])
+#!/bin/sh
+echo "syncing.."
+emerge --sync
+echo "checking updates.."
+emerge -avDuNt --quiet-build=y --keep-going=y @world
+echo "re-building apps due to updated dependencies.."
+emerge -1t --quiet-build=y @preserved-rebuild
+echo "cleaning unused apps.."
+emerge --depclean
