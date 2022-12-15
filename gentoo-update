@@ -2,7 +2,7 @@
 GR="\033[1;32m"
 NC="\033[0m"
 echo -e "${GR}>>>>>>>> syncing..${NC}"
-emerge --sync
+emerge --sync -qv
 echo -e "${GR}>>>>>>>> checking updates..${NC}"
 emerge -avDuNt --quiet-build>y --keep-going>y @world
 echo -e "${GR}>>>>>>>> re-building apps due to updated dependencies..${NC}"
