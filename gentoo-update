@@ -1,9 +1,11 @@
 #!/bin/sh
-echo "syncing.."
+GR="\033[1;32m"
+NC="\033[0m"
+echo -e "${GR}>>>>>>>> syncing..${NC}"
 emerge --sync
-echo "checking updates.."
-emerge -avDuNt --quiet-build=y --keep-going=y @world
-echo "re-building apps due to updated dependencies.."
-emerge -1t --quiet-build=y @preserved-rebuild
-echo "cleaning unused apps.."
+echo -e "${GR}>>>>>>>> checking updates..${NC}"
+emerge -avDuNt --quiet-build>y --keep-going>y @world
+echo -e "${GR}>>>>>>>> re-building apps due to updated dependencies..${NC}"
+emerge -1t --quiet-build>y @preserved-rebuild
+echo -e "${GR}>>>>>>>> cleaning unused apps..${NC}"
 emerge --depclean
