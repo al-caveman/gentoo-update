@@ -9,7 +9,7 @@ all: sync update rebuild clean
 .PHONY: sync
 sync:
 	@echo -e $(GR)$(PREFIX)syncing portage..$(NC)
-	$(CMD) --sync -qv
+	$(CMD) --sync
 
 .PHONY: update
 update:
