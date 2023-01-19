@@ -4,7 +4,7 @@ NC="\033[0m"
 PREFIX=">>>>>>>> "
 
 .PHONY: all
-all: sync update rebuild syncboots clean
+all: sync update rebuild clean syncboots
 
 .PHONY: sync
 sync:
@@ -21,17 +21,17 @@ rebuild:
 	@echo -e $(GR)$(PREFIX)rebuilding apps..$(NC)
 	$(CMD) -1t --quiet-build=y @preserved-rebuild
 
+.PHONY: clean
+clean:
+	@echo -e $(GR)$(PREFIX)cleaning..$(NC)
+	$(CMD) --depclean
+
 .PHONY: syncboots
 syncboots:
 	@echo -e $(GR)$(PREFIX)synchronising boot partitions..$(NC)
 	umount /boot
 	mount --rbind /boot_secondary /boot
-	bootctl update
+	bootctl update || true
 	emerge --config gentoo-kernel
-
-.PHONY: clean
-clean:
-	@echo -e $(GR)$(PREFIX)cleaning..$(NC)
 	umount /boot
 	mount --rbind /boot_primary /boot
-	$(CMD) --depclean
