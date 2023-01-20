@@ -4,31 +4,31 @@ NC="\033[0m"
 PREFIX=">>>>>>>> "
 
 .PHONY: all
-all: sync update rebuild clean syncboots
+all: sync upgrade rebuild depclean boots
 
 .PHONY: sync
 sync:
 	@echo -e $(GR)$(PREFIX)syncing portage..$(NC)
 	$(CMD) --sync
 
-.PHONY: update
-update:
-	@echo -e $(GR)$(PREFIX)updating apps..$(NC)
+.PHONY: upgrade
+upgrade:
+	@echo -e $(GR)$(PREFIX)upgrading..$(NC)
 	$(CMD) -avDuNt --quiet-build=y --keep-going=y @world
 
 .PHONY: rebuild
 rebuild:
-	@echo -e $(GR)$(PREFIX)rebuilding apps..$(NC)
+	@echo -e $(GR)$(PREFIX)rebuilding..$(NC)
 	$(CMD) -1t --quiet-build=y @preserved-rebuild
 
-.PHONY: clean
-clean:
+.PHONY: depclean
+depclean:
 	@echo -e $(GR)$(PREFIX)cleaning..$(NC)
 	$(CMD) --depclean
 
-.PHONY: syncboots
-syncboots:
-	@echo -e $(GR)$(PREFIX)synchronising boot partitions..$(NC)
+.PHONY: boots
+boots:
+	@echo -e $(GR)$(PREFIX)syncing boots..$(NC)
 	umount /boot
 	mount --rbind /boot_secondary /boot
 	bootctl update || true
