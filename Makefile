@@ -16,13 +16,13 @@ upgrade:
 	@echo -e $(GR)$(PREFIX)upgrading..$(NC)
 	umount /boot || true
 	mount --rbind /boot_primary /boot
-	$(CMD) -aqvDuNt --quiet-build=y --keep-going=y @world
+	$(CMD) -aqvDuNt --keep-going=y @world
 	umount /boot
 
 .PHONY: rebuild
 rebuild:
 	@echo -e $(GR)$(PREFIX)rebuilding..$(NC)
-	$(CMD) -aqvt1 --quiet-build=y @preserved-rebuild
+	$(CMD) -aqvt1 --keep-going=y @preserved-rebuild
 
 .PHONY: depclean
 depclean:
