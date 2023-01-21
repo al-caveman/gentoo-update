@@ -14,12 +14,15 @@ sync:
 .PHONY: upgrade
 upgrade:
 	@echo -e $(GR)$(PREFIX)upgrading..$(NC)
-	$(CMD) -avDuNt --quiet-build=y --keep-going=y @world
+	umount /boot || true
+	mount --rbind /boot_primary /boot
+	$(CMD) -aqvDuNt --quiet-build=y --keep-going=y @world
+	umount /boot
 
 .PHONY: rebuild
 rebuild:
 	@echo -e $(GR)$(PREFIX)rebuilding..$(NC)
-	$(CMD) -1t --quiet-build=y @preserved-rebuild
+	$(CMD) -aqvt1 --quiet-build=y @preserved-rebuild
 
 .PHONY: depclean
 depclean:
@@ -29,9 +32,8 @@ depclean:
 .PHONY: boots
 boots:
 	@echo -e $(GR)$(PREFIX)syncing boots..$(NC)
-	umount /boot
+	umount /boot || true
 	mount --rbind /boot_secondary /boot
 	bootctl update || true
 	emerge --config gentoo-kernel
 	umount /boot
-	mount --rbind /boot_primary /boot
