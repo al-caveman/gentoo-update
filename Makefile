@@ -42,6 +42,5 @@ boots:
 .PHONY: fonts
 fonts:
 	@echo -e $(GRB)$(PREFIX)syncing fonts..$(NC)
-	git -C ~/Documents/dev/google-fonts/ pull
+	git -C ~/.local/share/fonts/amiri pull
 	fc-cache
-	@echo -e $(GRN)to add/del fonts, link their dir into ~/.local/share/fonts/
