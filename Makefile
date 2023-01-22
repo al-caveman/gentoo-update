@@ -42,5 +42,5 @@ boots:
 .PHONY: fonts
 fonts:
 	@echo -e $(GRB)$(PREFIX)syncing fonts..$(NC)
-	git -C ~/.local/share/fonts/amiri pull
-	fc-cache
+	sudo -u $(SUDO_USER) git -C /home/$(SUDO_USER)/.local/share/fonts/amiri pull
+	sudo -u $(SUDO_USER) fc-cache
